@@ -1,5 +1,6 @@
 package com.johnclouse.notes;
 
+import android.app.ListActivity;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,7 +14,7 @@ import com.johnclouse.notes.data.NotesDataSource;
 import java.util.List;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ListActivity {
 
     private NotesDataSource dataSource;
 
@@ -23,12 +24,22 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         dataSource = new NotesDataSource(this); //"this" needed if there is a non-default constr.
+
+        refreshDisplay();
+
         List<NoteItem> notes = dataSource.findall();
         NoteItem note = notes.get(0);
+        note.setText("Updated!");
 
         dataSource.update(note);
 
-        Log.i("NOTES", note.getKey()); // Logs for debugging.
+        notes = dataSource.findall();
+        note = notes.get(0);
+
+        Log.i("NOTES", note.getKey() + ": " + note.getText()); // Logs for debugging.
+    }
+
+    private void refreshDisplay() {
     }
 
 

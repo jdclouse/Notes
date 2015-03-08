@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Created by John on 3/7/2015.
@@ -20,10 +23,19 @@ public class NotesDataSource {
 
     public List<NoteItem> findall() {
 
-        List<NoteItem> noteList = new ArrayList<NoteItem>(); //ArrayList is a concrete class that uses List interface.
-        // Stores data in order you put it in (duh)
-        NoteItem note = NoteItem.getNew();
-        noteList.add(note);
+        Map<String, ?> notesMap = notePrefs.getAll();// ? because you don't know what the value is
+        // Maps are unordered. sort them.
+        // TreeSet returns a sorted set. Oldest->newest because they are alphanumeric
+        SortedSet<String> keys = new TreeSet<String>(notesMap.keySet());
+
+        List<NoteItem> noteList = new ArrayList<NoteItem>();
+        for (String key : keys) {
+            NoteItem note = new NoteItem();
+            note.setKey(key);
+            note.setText((String) notesMap.get(key));
+            noteList.add(note);
+        }
+
         return noteList;
 
     }
