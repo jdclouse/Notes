@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 
 import com.johnclouse.notes.data.NoteItem;
 import com.johnclouse.notes.data.NotesDataSource;
@@ -17,6 +18,7 @@ import java.util.List;
 public class MainActivity extends ListActivity {
 
     private NotesDataSource dataSource;
+    List<NoteItem> notesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,19 +29,13 @@ public class MainActivity extends ListActivity {
 
         refreshDisplay();
 
-        List<NoteItem> notes = dataSource.findall();
-        NoteItem note = notes.get(0);
-        note.setText("Updated!");
-
-        dataSource.update(note);
-
-        notes = dataSource.findall();
-        note = notes.get(0);
-
-        Log.i("NOTES", note.getKey() + ": " + note.getText()); // Logs for debugging.
     }
 
     private void refreshDisplay() {
+        notesList = dataSource.findall();
+        ArrayAdapter<NoteItem> adapter =
+                new ArrayAdapter<NoteItem>(this, R.layout.list_item_layout, notesList);
+        setListAdapter(adapter);
     }
 
 

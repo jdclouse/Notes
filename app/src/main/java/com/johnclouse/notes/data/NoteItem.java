@@ -39,6 +39,11 @@ public class NoteItem {
 
     }
 
-private String key;
+    @Override
+    public String toString() {
+        return this.getText();
+    }
+
+    private String key;
 private String text;
 }
