@@ -39,6 +39,6 @@ public class NoteItem {
 
     }
 
-    private String key;
-    private String text;
+private String key;
+private String text;
 }

@@ -22,9 +22,11 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dataSource = new NotesDataSource();
+        dataSource = new NotesDataSource(this); //"this" needed if there is a non-default constr.
         List<NoteItem> notes = dataSource.findall();
         NoteItem note = notes.get(0);
+
+        dataSource.update(note);
 
         Log.i("NOTES", note.getKey()); // Logs for debugging.
     }
