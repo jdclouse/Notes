@@ -1,18 +1,11 @@
 package com.johnclouse.notes;
 
-import android.app.Fragment;
-import android.app.ListActivity;
 import android.app.ListFragment;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.johnclouse.notes.data.NoteItem;
@@ -42,7 +35,7 @@ public class MainActivity extends ActionBarActivity {
     private void refreshDisplay(ListFrag theList) {
         notesList = dataSource.findall();
         ArrayAdapter<NoteItem> adapter =
-                new ArrayAdapter<NoteItem>(this, R.layout.list_item_layout, notesList);
+                new ArrayAdapter<>(this, R.layout.list_item_layout, notesList);
         theList.setListAdapter(adapter);
     }
 
