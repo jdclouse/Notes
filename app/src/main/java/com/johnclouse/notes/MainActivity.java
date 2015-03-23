@@ -4,9 +4,12 @@ import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.johnclouse.notes.data.NoteItem;
 import com.johnclouse.notes.data.NotesDataSource;
@@ -37,6 +40,7 @@ public class MainActivity extends ActionBarActivity {
         ArrayAdapter<NoteItem> adapter =
                 new ArrayAdapter<>(this, R.layout.list_item_layout, notesList);
         theList.setListAdapter(adapter);
+        theList.setNotesList(notesList);
     }
 
 
@@ -72,10 +76,30 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public static class ListFrag extends ListFragment {
+
+        public void setNotesList(List<NoteItem> notesList) {
+            this.notesList = notesList;
+        }
+
+        List<NoteItem> notesList;
+
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
             //setListAdapter();  //Taking care of this in the main activity refresh.
         }
+
+        @Override
+        public void onListItemClick(ListView l, View v, int position, long id) {
+            Log.i("NOTES", Integer.toString(position));
+            NoteItem note = notesList.get(position);
+            Intent intent = new Intent(this.getActivity(), NoteEditorActivity.class); //screen
+            intent.putExtra("key", note.getKey());
+            intent.putExtra("text", note.getText()); // data
+
+            startActivityForResult(intent, 1001);
+        }
+
+
     }
 }
