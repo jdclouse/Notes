@@ -1,17 +1,31 @@
 package com.johnclouse.notes;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+
+import com.johnclouse.notes.data.NoteItem;
 
 
 public class NoteEditorActivity extends ActionBarActivity {
 
+    private NoteItem note;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_editor);
+
+        Intent intent = this.getIntent();
+        note = new NoteItem();
+        note.setKey(intent.getStringExtra("key"));
+        note.setText(intent.getStringExtra("text"));
+
+        EditText et = (EditText) findViewById(R.id.noteText); //the text-editing interface
+        et.setText(note.getText());
+        et.setSelection(note.getText().length()); //cursor at end
     }
 
 

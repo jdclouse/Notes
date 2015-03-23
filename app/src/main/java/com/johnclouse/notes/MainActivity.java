@@ -1,12 +1,18 @@
 package com.johnclouse.notes;
 
+import android.app.Fragment;
 import android.app.ListActivity;
+import android.app.ListFragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.johnclouse.notes.data.NoteItem;
@@ -15,7 +21,7 @@ import com.johnclouse.notes.data.NotesDataSource;
 import java.util.List;
 
 
-public class MainActivity extends ListActivity {
+public class MainActivity extends ActionBarActivity {
 
     private NotesDataSource dataSource;
     List<NoteItem> notesList;
@@ -25,17 +31,19 @@ public class MainActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dataSource = new NotesDataSource(this); //"this" needed if there is a non-default constr.
+        dataSource = new NotesDataSource(this); //"this" needed if there is a non-default constr.+
+        ListFrag fragment = new ListFrag();
+        getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
 
-        refreshDisplay();
+        refreshDisplay(fragment);
 
     }
 
-    private void refreshDisplay() {
+    private void refreshDisplay(ListFrag theList) {
         notesList = dataSource.findall();
         ArrayAdapter<NoteItem> adapter =
                 new ArrayAdapter<NoteItem>(this, R.layout.list_item_layout, notesList);
-        setListAdapter(adapter);
+        theList.setListAdapter(adapter);
     }
 
 
@@ -55,9 +63,26 @@ public class MainActivity extends ListActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_create) {
-            return true;
+            createNote();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createNote() {
+        NoteItem note = NoteItem.getNew();
+        Intent intent = new Intent(this, NoteEditorActivity.class); //screen
+        intent.putExtra("key", note.getKey());
+        intent.putExtra("text", note.getText()); // data
+
+        startActivityForResult(intent, 1001);
+    }
+
+    public static class ListFrag extends ListFragment {
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            //setListAdapter();  //Taking care of this in the main activity refresh.
+        }
     }
 }
