@@ -26,7 +26,9 @@ public class NoteEditorActivity extends ActionBarActivity {
 
         EditText et = (EditText) findViewById(R.id.noteText); //the text-editing interface
         et.setText(note.getText());
-        et.setSelection(note.getText().length()); //cursor at end
+        if (note.getText() != null) { // In the event of an empty note... TODO don't save an empty one
+            et.setSelection(note.getText().length()); //cursor at end
+        }
     }
 
     @Override
