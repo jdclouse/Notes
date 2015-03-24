@@ -4,7 +4,6 @@ import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,8 +18,10 @@ import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
 
+    public static final int EDITOR_ACTIVITY_REQUEST = 1001;
     private NotesDataSource dataSource;
     List<NoteItem> notesList;
+    ListFrag fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +29,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         dataSource = new NotesDataSource(this); //"this" needed if there is a non-default constr.+
-        ListFrag fragment = new ListFrag();
+        fragment = new ListFrag();
         getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
 
         refreshDisplay(fragment);
@@ -41,6 +42,7 @@ public class MainActivity extends ActionBarActivity {
                 new ArrayAdapter<>(this, R.layout.list_item_layout, notesList);
         theList.setListAdapter(adapter);
         theList.setNotesList(notesList);
+        theList.setDataSource(dataSource);
     }
 
 
@@ -72,7 +74,18 @@ public class MainActivity extends ActionBarActivity {
         intent.putExtra("key", note.getKey());
         intent.putExtra("text", note.getText()); // data
 
-        startActivityForResult(intent, 1001);
+        startActivityForResult(intent, EDITOR_ACTIVITY_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == EDITOR_ACTIVITY_REQUEST && resultCode == RESULT_OK) {
+            NoteItem note = new NoteItem();
+            note.setKey(data.getStringExtra("key"));
+            note.setText(data.getStringExtra("text"));
+            dataSource.update(note);
+            refreshDisplay(fragment);
+        }
     }
 
     public static class ListFrag extends ListFragment {
@@ -83,6 +96,12 @@ public class MainActivity extends ActionBarActivity {
 
         List<NoteItem> notesList;
 
+        public void setDataSource(NotesDataSource dataSource) {
+            this.dataSource = dataSource;
+        }
+
+        private NotesDataSource dataSource;
+
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
@@ -91,15 +110,24 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         public void onListItemClick(ListView l, View v, int position, long id) {
-            Log.i("NOTES", Integer.toString(position));
+//            Log.i("NOTES", Integer.toString(position));
             NoteItem note = notesList.get(position);
             Intent intent = new Intent(this.getActivity(), NoteEditorActivity.class); //screen
             intent.putExtra("key", note.getKey());
             intent.putExtra("text", note.getText()); // data
 
-            startActivityForResult(intent, 1001);
+            startActivityForResult(intent, EDITOR_ACTIVITY_REQUEST);
         }
 
-
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (requestCode == EDITOR_ACTIVITY_REQUEST && resultCode == RESULT_OK) {
+                NoteItem note = new NoteItem();
+                note.setKey(data.getStringExtra("key"));
+                note.setText(data.getStringExtra("text"));
+                dataSource.update(note);
+//                getActivity().refreshDisplay(this);
+            }
+        }
     }
 }

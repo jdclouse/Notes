@@ -1,8 +1,8 @@
 package com.johnclouse.notes;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -17,6 +17,7 @@ public class NoteEditorActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_editor);
+//        getActionBar().setDisplayHomeAsUpEnabled(true); //launcher icon will now go "home"
 
         Intent intent = this.getIntent();
         note = new NoteItem();
@@ -27,7 +28,6 @@ public class NoteEditorActivity extends ActionBarActivity {
         et.setText(note.getText());
         et.setSelection(note.getText().length()); //cursor at end
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -47,7 +47,30 @@ public class NoteEditorActivity extends ActionBarActivity {
         if (id == R.id.action_create) {
             return true;
         }
+        if (id == R.id.home) {
+            saveAndFinish();
+        }
+        return false;
 
-        return super.onOptionsItemSelected(item);
+
+//        return super.onOptionsItemSelected(item);
+    }
+
+    // finishing is returning to the previous activity.
+    private void saveAndFinish() {
+        EditText et = (EditText) findViewById(R.id.noteText); //the text-editing interface
+        String noteText = et.getText().toString(); // get the text from the editor
+
+        Intent intent = new Intent();
+        intent.putExtra("key", note.getKey());
+        intent.putExtra("text", noteText);
+        setResult(RESULT_OK, intent); // data saved persistently
+        finish();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        saveAndFinish();
     }
 }
