@@ -20,7 +20,6 @@ public class MainActivity extends ActionBarActivity {
 
     public static final int EDITOR_ACTIVITY_REQUEST = 1001;
     private NotesDataSource dataSource;
-    List<NoteItem> notesList;
     ListFrag fragment;
 
     @Override
@@ -32,19 +31,12 @@ public class MainActivity extends ActionBarActivity {
         fragment = new ListFrag();
         getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
 
-        refreshDisplay(fragment);
+        fragment.setDataSource(dataSource);
+
+//        Log.i("NOTES", "in create:");
+//        Log.i("NOTES", Integer.toString(R.layout.list_item_layout));
 
     }
-
-    private void refreshDisplay(ListFrag theList) {
-        notesList = dataSource.findall();
-        ArrayAdapter<NoteItem> adapter =
-                new ArrayAdapter<>(this, R.layout.list_item_layout, notesList);
-        theList.setListAdapter(adapter);
-        theList.setNotesList(notesList);
-        theList.setDataSource(dataSource);
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -83,29 +75,24 @@ public class MainActivity extends ActionBarActivity {
             NoteItem note = new NoteItem();
             note.setKey(data.getStringExtra("key"));
             note.setText(data.getStringExtra("text"));
-            dataSource.update(note);
-            refreshDisplay(fragment);
+            fragment.dataSource.update(note);
+            fragment.refreshDisplay();
         }
     }
 
     public static class ListFrag extends ListFragment {
 
-        public void setNotesList(List<NoteItem> notesList) {
-            this.notesList = notesList;
-        }
-
-        List<NoteItem> notesList;
-
         public void setDataSource(NotesDataSource dataSource) {
             this.dataSource = dataSource;
         }
 
-        private NotesDataSource dataSource;
+        List<NoteItem> notesList;
+        private NotesDataSource dataSource; // Reference to the activity data source.
 
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
-            //setListAdapter();  //Taking care of this in the main activity refresh.
+            refreshDisplay();
         }
 
         @Override
@@ -126,8 +113,16 @@ public class MainActivity extends ActionBarActivity {
                 note.setKey(data.getStringExtra("key"));
                 note.setText(data.getStringExtra("text"));
                 dataSource.update(note);
-//                getActivity().refreshDisplay(this);
+                refreshDisplay();
             }
+        }
+
+        // Refresh the list items, done through the adapter.
+        private void refreshDisplay() {
+            notesList = dataSource.findAll();
+            ArrayAdapter<NoteItem> adapter =
+                    new ArrayAdapter<>(getActivity(), R.layout.list_item_layout, notesList);
+            setListAdapter(adapter);
         }
     }
 }

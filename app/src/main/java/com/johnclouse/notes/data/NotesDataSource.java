@@ -14,14 +14,14 @@ import java.util.TreeSet;
  */
 public class NotesDataSource {
 
-    private static final String PREFKEY = "notes"; // A constant. All-caps is Java-ism.
+    private static final String PREFKEY = "notes"; // A constant. All-caps is a preferred Java-ism.
     private SharedPreferences notePrefs;
 
     public NotesDataSource(Context context) {
         notePrefs = context.getSharedPreferences(PREFKEY, Context.MODE_PRIVATE);
     }
 
-    public List<NoteItem> findall() {
+    public List<NoteItem> findAll() {
 
         Map<String, ?> notesMap = notePrefs.getAll();// ? because you don't know what the value is
         // Maps are unordered. sort them.
